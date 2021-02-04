@@ -1,40 +1,79 @@
 package com.example.gettinglist;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+import android.widget.SeekBar;
+import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    ListView listView;
+
+    public void generateTimesTable(int timesValue){
+        ArrayList<String> timesTableContent = new ArrayList<String>();
+        for(int j = 1; j<=10; j++){
+            timesTableContent.add(Integer.toString(j * timesValue));
+        }
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, timesTableContent);
+        listView.setAdapter(arrayAdapter);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView listView = (ListView) findViewById(R.id.listView); // taking list view
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+        listView = (ListView) findViewById(R.id.listView);
 
-        ArrayList<String> myFamily = new ArrayList<String>(); // creating list elements
-        myFamily.add("Sarvesh");
-        myFamily.add("Yogita");
-        myFamily.add("Vikrant");
-        myFamily.add("Nishant");
-        myFamily.add("Siddhant");
+        int max = 20;
+        int startingPosition = 10;
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myFamily); // creating arrayAdapter and linking the list we created
-        listView.setAdapter(arrayAdapter); // arrayAdapter is a bridge which connects listview with list.
+        seekBar.setMax(max);
+        seekBar.setProgress(startingPosition);
+        generateTimesTable(startingPosition);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("Info", myFamily.get(position));
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int min = 1;
+                int timesValue;
+                if(progress < min){
+                    timesValue = min;
+                    seekBar.setProgress(min);
+                } else {
+                    timesValue = progress;
+                }
+                Log.i("SeekBar Value", Integer.toString(timesValue));
+                generateTimesTable(timesValue);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
+
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr);
+//        listView.setAdapter(arrayAdapter);
+
     }
+
+
 }
